@@ -1,0 +1,119 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[4]:
+
+
+import pyreadline
+
+
+# In[7]:
+
+
+import Bio
+
+
+# In[13]:
+
+
+from Bio.Seq import Seq
+my=Seq("CCGGAATTT")
+at=[i for i in dir(my) if not i.startswith("_")]
+print(at)
+
+
+# In[14]:
+
+
+from Bio.Alphabet import generic_dna,generic_protein,generic_rna
+
+
+# In[15]:
+
+
+dna=Seq("AGTCCC",generic_dna)
+rna=Seq("AGCUCC",generic_rna)
+prot=Seq("AKKKGGGUULL",generic_protein)
+
+
+# In[19]:
+
+
+mygene=Seq("AGTCTCGAC",generic_dna)
+mrna=mygene.transcribe()
+print(mrna)
+
+
+# In[20]:
+
+
+protein=mrna.translate()
+print(protein)
+
+
+# In[24]:
+
+
+print(protein.alphabet)
+
+
+# In[35]:
+
+
+DNA=Seq("ATGTGGGGTTTAAAGTGCCGATAG")
+PROTEIN=DNA.translate()
+print(PROTEIN)
+
+
+# In[36]:
+
+
+PRO=DNA.translate(cds=True)
+print(PRO)
+
+
+# In[38]:
+
+
+PRO=PRO.tomutable()
+PRO[0]="J"
+print(PRO)
+
+
+# In[40]:
+
+
+print(DNA.find("GGG"))
+
+
+# In[63]:
+
+
+from Bio.Blast import NCBIWWW as v
+res=v.qblast("blastn","nt",Seq("ATGGCCATTGTAATGTAG"))
+from Bio.Blast import NCBIXML as x
+reco=x.parse(res)
+
+
+# In[67]:
+
+
+for i in reco:
+     for s in i.alignments:
+        for hsp in s.hsps:
+            print("-------------alignments----------")
+            print("sequence: ",s.title)
+            print("length: ",s.length)
+            print("e value :",hsp.expect)
+            print(hsp.query[0:75]+ "--------")
+            print(hsp.match[0:75]+ "--------")
+            print(hsp.sbjct[0:75]+ "--------")
+   
+            
+
+
+# In[ ]:
+
+
+
+
