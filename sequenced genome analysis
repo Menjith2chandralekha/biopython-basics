@@ -1,0 +1,137 @@
+def reverseComplement(s):
+    complement = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A', 'N': 'N'}
+    t = ''
+    for base in s:
+        t = complement[base] + t
+    return t
+def naive(p, t):
+    occurrences = []
+    for i in range(len(t) - len(p) + 1): 
+        match = True
+        for j in range(len(p)):  
+            if t[i+j] != p[j]: 
+                match = False
+                break
+        if match:
+            occurrences.append(i) 
+    return occurrences
+    
+def naive_with_rc(p, t):
+	r = reverseComplement(p)
+	if r == p:
+		return naive(p,t)
+	else:
+		return naive(p,t) + naive(r,t)
+!wget --no-check http://d396qusza40orc.cloudfront.net/ads1/data/phix.fa
+
+def readGenome(filename):
+    genome = ''
+    with open(filename, 'r') as f:
+        for line in f:
+            # ignore header line with genome information
+            if not line[0] == '>':
+                genome += line.rstrip()
+    return genome
+
+genome=readGenome("phix.fa")
+p = 'CCC'
+t= genome
+occurrences = naive_with_rc(p, t)
+print(p)
+print(t)
+print(occurrences)
+# Assert: [10, 23]
+
+
+occurrences = naive_with_rc(p, genome)
+print('offset of leftmost occurrence: %d' % min(occurrences))
+# offset of leftmost occurrence: 62
+
+print('# occurrences: %d' % len(occurrences))
+# occurrences: 60
+
+
+----------------------------------------------------------sometimes we would like to find approximate matches for P in T--------------------------------
+
+# For example, ACTTTA occurs twice in ACTTACTTGATAAAGT, once at offset 0 with 2 mismatches, and once at offset 4 with 1 mismatch. 
+
+
+def naive_2mm(p, t):
+    occurrences = []
+    for i in range(len(t) - len(p) + 1): 
+        match = True
+        mismatch_count = 0
+        for j in range(len(p)): 
+            if t[i+j] != p[j]: 
+                mismatch_count+=1
+
+                if mismatch_count > 2:
+                	match = False
+                	break
+        if match:
+            occurrences.append(i)  
+    return occurrences
+
+
+# So naive_2mm('ACTTTA', 'ACTTACTTGATAAAGT') should return the list [0, 4].
+
+# How many times does TTCAAGCC occur in the Lambda virus genome when allowing up to 2 mismatches?
+occurrences = naive_2mm('TTCAAGCC', lambda_virus_genome)
+print('TTCAAGCC (up to 2 mismatches) in lambda_virus:')
+print('# occurrences: %d' % len(occurrences))
+
+
+
+------------------------------------------------------------gc%----------------------------
+def readFastq(filename):
+    sequences = []
+    qualities = []
+    with open(filename) as fh:
+        while True:
+            fh.readline()  # skip name line
+            seq = fh.readline().rstrip()  # read base sequence
+            fh.readline()  # skip placeholder line
+            qual = fh.readline().rstrip() # base quality line
+            if len(seq) == 0:
+                break
+            sequences.append(seq)
+            qualities.append(qual)
+    return sequences, qualities
+    
+def findGCByPos(reads):
+	gc = [0] * 100
+	totals = [0] * 100
+	for read in reads:
+		for i in range(len(read)):
+			if read[i] == 'C' or read[i] == 'G':
+				gc[i] += 1
+			totals[i] += 1
+	for i in range(len(gc)):
+		if totals[i] > 0:
+			gc[i] /= float(totals[i])
+	return gc
+
+def phred33ToQ(qual):
+    return ord(qual) - 33
+
+def createHist(qualityStrings):
+    # Create a histogram of quality scores
+    hist = [0]*50
+    for read in qualityStrings:
+        for phred in read:
+            q = phred33ToQ(phred)
+            hist[q] += 1
+    return hist
+
+seqs, quals = readFastq('ERR037900_1.first1000.fastq')
+# gc = findGCByPos(seqs)
+# plt.plot(range(len(gc)), gc)
+
+import matplotlib.pyplot as plt
+h = createHist(quals)
+print(h)
+#for i in range(len(h)):
+#	print(i)
+#	print(h[i])
+plt.plot(range(len(h)), h)
+plt.show()
