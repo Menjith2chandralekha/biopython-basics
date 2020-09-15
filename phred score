@@ -1,0 +1,104 @@
+what is phred score?
+To use the phred+33 encoding, take the phred quality score, add 33 to it, then use the ascii character corresponding to the sum.
+For example, using the phred+33 encoding, a quality score of 30 would be represented with the ascii character with the ascii code of 63 (30 + 33), which is ‘?’.
+when pherd score is high means you are getting high accuracy high accuarcy score meansyur base call is highly accurate.
+def phred33ToQ(qual):
+    return ord(qual) - 33
+
+def createHist(qualityStrings):
+    # Create a histogram of quality scores
+    hist = [0]*50
+    for read in qualityStrings:
+        for phred in read:
+            q = phred33ToQ(phred)
+            hist[q] += 1
+    return hist
+h=createHist(quals)
+
+in the above code quality of bases are input to the create hist from NGS data analysis .
+Now,from alphabets to real score value conversion taake place by just subtraction 33 from ord value of albhabet.
+after that our values mostly lies between 1 to 60 then histogram to visvalize the phred quality.
+
+import matplotlib.pyplot as plt
+h = createHist(quals)
+print(h)
+plt.plot(range(len(h)), h)
+plt.show()
+
+----------------------------------------------------------phred encoder in sequencer---------------------------------------------
+print ("{0:^5}  {1:^8}  {2:^8}  {3:^8}".format("Phred",  "Prob of", "Phred+33", "Phred+64"))
+print ("{0:^5}  {1:^8}  {2:^8}  {3:^8}".format("score",  "Error", "Ascii", "Ascii"))
+for phred in range(0,42):
+    print ("{0:^5}  {1:03.5f}  {2:^8}  {3:^8}".format(phred, error_prob(phred), chr(phred+33), chr(phred+64)))
+    
+    
+in the below table you can see the different encoder pherd 33,pherd 64 and their respective alphabet encoder.
+    
+    ------------------------------------------------output-----------------------------------------------
+    Phred  Prob of   Phred+33  Phred+64
+score   Error     Ascii     Ascii  
+  1    0.79433     "         A    
+  2    0.63096     #         B    
+  3    0.50119     $         C    
+  4    0.39811     %         D    
+  5    0.31623     &         E    
+  6    0.25119     '         F    
+  7    0.19953     (         G    
+  8    0.15849     )         H    
+  9    0.12589     *         I    
+ 10    0.10000     +         J    
+ 11    0.07943     ,         K    
+ 12    0.06310     -         L    
+ 13    0.05012     .         M    
+ 14    0.03981     /         N    
+ 15    0.03162     0         O    
+ 16    0.02512     1         P    
+ 17    0.01995     2         Q    
+ 18    0.01585     3         R    
+ 19    0.01259     4         S    
+ 20    0.01000     5         T    
+ 21    0.00794     6         U    
+ 22    0.00631     7         V    
+ 23    0.00501     8         W    
+ 24    0.00398     9         X    
+ 25    0.00316     :         Y    
+ 26    0.00251     ;         Z    
+ 27    0.00200     <         [    
+ 28    0.00158     =         \    
+ 29    0.00126     >         ]    
+ 30    0.00100     ?         ^    
+ 31    0.00079     @         _    
+ 32    0.00063     A         `    
+ 33    0.00050     B         a    
+ 34    0.00040     C         b    
+ 35    0.00032     D         c    
+ 36    0.00025     E         d    
+ 37    0.00020     F         e    
+ 38    0.00016     G         f    
+ 39    0.00013     H         g    
+ 40    0.00010     I         h    
+ 41    0.00008     J         i    
+ 42    0.00006     K         j    
+ 43    0.00005     L         k    
+ 44    0.00004     M         l    
+ 45    0.00003     N         m    
+ 46    0.00003     O         n    
+ 47    0.00002     P         o    
+ 48    0.00002     Q         p    
+ 49    0.00001     R         q    
+ 50    0.00001     S         r    
+ 51    0.00001     T         s    
+ 52    0.00001     U         t    
+ 53    0.00001     V         u    
+ 54    0.00000     W         v    
+ 55    0.00000     X         w    
+ 56    0.00000     Y         x    
+ 57    0.00000     Z         y    
+ 58    0.00000     [         z    
+ 59    0.00000     \         {    
+ 60    0.00000     ]         |    
+ 61    0.00000     ^         }    
+ 62    0.00000     _         ~ 
+ 
+ 
+------------------------------------------------------------------------------------
